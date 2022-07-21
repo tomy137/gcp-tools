@@ -3,8 +3,9 @@ import os
 from .logger import GCP_Logger
 from .sql import GCP_SQL
 from .storage import GCP_Storage
-
 from .snippet import encode_b64_json, decode_b64_json, date_to_datetime, datetime_now
+
+from .chat import send
 
 class GCP_Tools(object):
 
@@ -21,6 +22,8 @@ class GCP_Tools(object):
 		self.decode_b64_json = decode_b64_json
 		self.date_to_datetime = date_to_datetime
 		self.datetime_now = datetime_now
+
+		self.send_chat = send
 
 	##
 	#	Vérifie si l'app est lancée en local ou sur un GCP
