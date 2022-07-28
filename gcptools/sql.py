@@ -47,8 +47,13 @@ class GCP_SQL() :
 
 	def insert_or_update(self, table=None, **args) :
 
-		values_labels = ', '.join( [ f'{k}' for k in args ] )
-		values_values = ', '.join( [ f'"{args[k]}"' for k in args ] )
+		values_labels = [ f'{k}' for k in args if args[k] ]
+		# DOCS : https://stackoverflow.com/a/41970663/2373259
+		values_values = [ args[k] for k in args if args[k] ]
+		values_values = [ "\"{}\"".format(k.replace('"',r'\"')) if ( not 'float' in str(type(k)) and not 'int' in str(type(k)) and not k.isnumeric() ) else "\"{}\"".format(k) for k in values_values ] #💩
+
+		values_labels = ', '.join( values_labels )
+		values_values = ', '.join( values_values )
 
 		update_assignements = ', '.join( f"{k} = VALUES({k})" for k in args )
 
