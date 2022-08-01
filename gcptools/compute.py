@@ -49,16 +49,34 @@ class VM() :
 		operation = self.gcp_compute.instance_client.stop( project=self.gcp_compute.PROJECT_NAME, zone=self.gcp_compute.zone, instance=self.name )
 		self.wait_for_extended_operation(operation, f"stop {self.name}")
 
+
 	def wait_for_extended_operation(self, operation, verbose_name, timeout=300):
 
 		t0 = datetime.datetime.now()
-		i = 0
 
-		while operation.progress < 100 and not operation.error and i < 10 :
-			self.gcp_tools.logger.debug(f"{verbose_name} - Opération en cours. Avancement : {operation.progress}% - Temps écoulé : {datetime.datetime.now()-t0}")
-			time.sleep(5)
-			i+=1
+		kwargs = {"project": self.gcp_compute.PROJECT_NAME, "operation": operation.name, "timeout": timeout}
+
+		## DOCS : https://cloud.google.com/compute/docs/samples/compute-instances-operation-check
+		if operation.zone:
+		    client = compute_v1.ZoneOperationsClient()
+		    # Operation.zone is a full URL address of a zone, so we need to extract just the name
+		    kwargs["zone"] = operation.zone.rsplit("/", maxsplit=1)[1]
+		elif operation.region:
+		    client = compute_v1.RegionOperationsClient()
+		    # Operation.region is a full URL address of a region, so we need to extract just the name
+		    kwargs["region"] = operation.region.rsplit("/", maxsplit=1)[1]
+		else:
+		    client = compute_v1.GlobalOperationsClient()
+
+
+		finished_operation = client.wait(**kwargs)
+
+		self.gcp_tools.logger.debug(f"{verbose_name} - Opération terminée - Status : {finished_operation.status} - Temps écoulé : {datetime.datetime.now()-t0}")
 
 		if operation.error :
 			self.gcp_tools.logger.warn( f"Error during {verbose_name} : {operation.error}" )
+
+
+
+
 
