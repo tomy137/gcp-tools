@@ -50,11 +50,11 @@ class VM() :
 		self.wait_for_extended_operation(operation, f"stop {self.name}")
 
 
-	def wait_for_extended_operation(self, operation, verbose_name, timeout=300):
+	def wait_for_extended_operation(self, operation, verbose_name):
 
 		t0 = datetime.datetime.now()
 
-		kwargs = {"project": self.gcp_compute.PROJECT_NAME, "operation": operation.name, "timeout": timeout}
+		kwargs = {"project": self.gcp_compute.PROJECT_NAME, "operation": operation.name}
 
 		## DOCS : https://cloud.google.com/compute/docs/samples/compute-instances-operation-check
 		if operation.zone:
