@@ -4,6 +4,7 @@ from .logger import GCP_Logger
 from .sql import GCP_SQL
 from .storage import GCP_Storage
 from .snippet import encode_b64_json, decode_b64_json, date_to_datetime, datetime_now
+from .compute import GCP_Compute
 
 from .chat import send
 
@@ -15,6 +16,7 @@ class GCP_Tools(object):
 		self.logger = GCP_Logger(self)
 		self.sql = GCP_SQL(self)
 		self.storage = GCP_Storage(self)
+		self.compute = GCP_Compute(self)
 
 		self.logger.debug(f"Correctement initialisé.")
 

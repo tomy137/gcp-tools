@@ -19,17 +19,23 @@ class GCP_SQL() :
 
 	def init_bdd(self) :
 
-		db_user = os.environ.get("DB_USER")
-		db_pass = os.environ.get("DB_PASS")
-		db_name = os.environ.get("DB_NAME")
+		DB_USER = os.environ.get("DB_USER")
+		DB_PASS = os.environ.get("DB_PASS")
+		DB_NAME = os.environ.get("DB_NAME")
+		PROJECT_NAME = os.environ.get("PROJECT_NAME")
+		SQL_INSTANCE_NAME = os.environ.get("SQL_INSTANCE_NAME")
+
+		if None in [DB_USER, DB_PASS, DB_NAME, PROJECT_NAME, SQL_INSTANCE_NAME] :
+			self.gcp_tools.logger.warn("L'une des variables d'environnement suivante n'est pas initialisée, on ne charge pas le module SQL. Liste : DB_USER, DB_PASS, DB_NAME, PROJECT_NAME, SQL_INSTANCE_NAME")
+			return None
 
 		if self.gcp_tools.is_locally_run() :
-			self.gcp_tools.logger.debug("🚲 Démarrage de l'app en local 🚲 -- Attention a bien avoir démarré le proxy !")
-			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_pass}@localhost/{db_name}?charset=utf8mb4"
+			self.gcp_tools.logger.debug("🚲 Démarrage de l'app SQL en local 🚲 -- Attention a bien avoir démarré le proxy !")
+			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@localhost/{DB_NAME}?charset=utf8mb4"
 
 		else :
-			self.gcp_tools.logger.debug("🛰 Démarrage de l'app sur l'environnement Google 🛰")
-			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_pass}@/{db_name}?unix_socket=/cloudsql/reactiometre:europe-west1:tmf-reactiometre-bdd&charset=utf8mb4"
+			self.gcp_tools.logger.debug("🛰 Démarrage de l'app SQL sur l'environnement Google 🛰")
+			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@/{DB_NAME}?unix_socket=/cloudsql/{PROJECT_NAME}:europe-west1:{SQL_INSTANCE_NAME}&charset=utf8mb4"
 
 		self.engine = create_engine(SQLALCHEMY_DATABASE_URI)
 

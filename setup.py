@@ -18,6 +18,7 @@ setup(
         'google-cloud-pubsub==2.4.*',
         'google.cloud.logging',
         'google-api-python-client',
+        'google-cloud-compute',
         'oauth2client',
         'markupsafe==2.0.1',
         'requests',

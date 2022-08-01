@@ -1,4 +1,4 @@
-import urllib.parse, urllib.request, traceback
+import urllib.parse, urllib.request, traceback, os
 from google.cloud import storage
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -22,8 +22,10 @@ class GCP_Storage() :
 
 			answer = { 'src_url':target_url, 'url': None, 'record_status': None }
 
+			STORAGE_NAME = os.environ['STORAGE_NAME']
+
 			## On vérifie qu'on ne demande pas de stocker un truc déjà stocké
-			if 'tmf_reactiometre_exchange' in target_url :
+			if STORAGE_NAME in target_url :
 
 				self.gcp_tools.logger.debug(f"gcp_download_from_url - target_url='{target_url}' / destination_blob_name='{destination_blob_name}' / Déjà téléchargé. On ne fait rien. ")
 				answer['url'] = target_url
@@ -33,7 +35,7 @@ class GCP_Storage() :
 
 			## On charche le module GCP Storage
 			storage_client = storage.Client()
-			bucket = storage_client.bucket("tmf_reactiometre_exchange")
+			bucket = storage_client.bucket(STORAGE_NAME)
 
 			## On pré-charge le fichier
 
