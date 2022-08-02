@@ -22,8 +22,8 @@ class GCP_SQL() :
 		DB_USER = os.environ.get("DB_USER")
 		DB_PASS = os.environ.get("DB_PASS")
 		DB_NAME = os.environ.get("DB_NAME")
-		PROJECT_NAME = os.environ.get("PROJECT_NAME")
-		SQL_INSTANCE_NAME = os.environ.get("SQL_INSTANCE_NAME")
+		PROJECT_NAME = os.environ.get("PROJECT_NAME") or 'reactiometre'
+		SQL_INSTANCE_NAME = os.environ.get("SQL_INSTANCE_NAME") or 'tmf-reactiometre-bdd'
 
 		if None in [DB_USER, DB_PASS, DB_NAME, PROJECT_NAME, SQL_INSTANCE_NAME] :
 			self.gcp_tools.logger.warn("L'une des variables d'environnement suivante n'est pas initialisée, on ne charge pas le module SQL. Liste : DB_USER, DB_PASS, DB_NAME, PROJECT_NAME, SQL_INSTANCE_NAME")

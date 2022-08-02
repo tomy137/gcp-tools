@@ -9,7 +9,7 @@ class GCP_Compute() :
 
 		self.gcp_tools = gcp_tools
 		self.instance_client = compute_v1.InstancesClient()
-		self.PROJECT_NAME = os.environ['PROJECT_NAME']
+		self.PROJECT_NAME = os.environ.get('PROJECT_NAME') or 'reactiometre'
 		self.instances = []
 
 	def get_vms(self, zone):
