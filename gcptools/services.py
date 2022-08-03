@@ -10,7 +10,7 @@ class GCP_Services_Manager() :
 
 	def __init__(self):
 
-		self.PROJECT_NAME = os.environ['PROJECT_NAME']
+		self.PROJECT_NAME = os.environ.get('PROJECT_NAME') or "reactiometre"
 
 		self.appsId=self.PROJECT_NAME
 		credentials = GoogleCredentials.get_application_default()

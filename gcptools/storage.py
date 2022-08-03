@@ -22,7 +22,7 @@ class GCP_Storage() :
 
 			answer = { 'src_url':target_url, 'url': None, 'record_status': None }
 
-			STORAGE_NAME = os.environ['STORAGE_NAME']
+			STORAGE_NAME = os.environ.get('STORAGE_NAME') or "tmf_reactiometre_exchange"
 
 			## On vérifie qu'on ne demande pas de stocker un truc déjà stocké
 			if STORAGE_NAME in target_url :
