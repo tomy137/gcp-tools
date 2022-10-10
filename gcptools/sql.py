@@ -22,6 +22,7 @@ class GCP_SQL() :
 		DB_USER = os.environ.get("DB_USER")
 		DB_PASS = os.environ.get("DB_PASS")
 		DB_NAME = os.environ.get("DB_NAME")
+		DB_HOST = os.environ.get("DB_HOST") or 'localhost'
 		PROJECT_NAME = os.environ.get("PROJECT_NAME") or 'reactiometre'
 		SQL_INSTANCE_NAME = os.environ.get("SQL_INSTANCE_NAME") or 'tmf-reactiometre-bdd'
 
@@ -31,7 +32,7 @@ class GCP_SQL() :
 
 		if self.gcp_tools.is_locally_run() :
 			self.gcp_tools.logger.debug("🚲 Démarrage de l'app SQL en local 🚲 -- Attention a bien avoir démarré le proxy !")
-			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@localhost/{DB_NAME}?charset=utf8mb4"
+			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}?charset=utf8mb4"
 
 		else :
 			self.gcp_tools.logger.debug("🛰 Démarrage de l'app SQL sur l'environnement Google 🛰")
