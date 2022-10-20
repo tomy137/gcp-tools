@@ -41,13 +41,23 @@ class GCP_SQL() :
 		self.engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
 
+	def to_one_dict(self, sql_execution, clean=False) :
+		if not sql_execution : return None
+		j = sql_execution._asdict()
+		return { k:j[k] for k in j if j[k] } if clean else j
 
-	def to_list_of_dict(self, sql_execution) :
+	def to_list_of_dict(self, sql_execution, clean=False) :
 
-		return [ o._asdict() for o in sql_execution ]
+		if not sql_execution : return None
+
+		t = [ o._asdict() for o in sql_execution ]
+		if not clean : return t
+
+		t_ = []
+		for j in t : t_.append( { k:j[k] for k in j if j[k] } )
+		return t_
 
 	def just_one_value(self, sql_execution) :
-
 		v = sql_execution.one_or_none()
 		return v[0] if v else None
 
