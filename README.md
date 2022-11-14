@@ -8,6 +8,7 @@ Variables d'environnement à préciser :
 - DB_NAME	(Nom de la base de données)
 - PROJECT_NAME (Nom du projet GCP)
 - STORAGE_NAME (Nom du bucket Google Storage)
+- LOCATION (Location, exemple : europe-west1)
 
 ## Initialiser l'outil
 ```
