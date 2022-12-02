@@ -32,4 +32,4 @@ class GCP_Tools(object):
 	#	Vérifie si l'app est lancée en local ou sur un GCP
 	##
 	def is_locally_run(self) :
-		return not(os.environ.get('GOOGLE_CLOUD_PROJECT') or os.environ.get('GAE_RUNTIME'))
+		return not(os.environ.get('GOOGLE_CLOUD_PROJECT') or os.environ.get('GAE_RUNTIME') or os.environ.get('FORCE_CLOUD'))
