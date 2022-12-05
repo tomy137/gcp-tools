@@ -10,12 +10,18 @@ class GCP_SQL() :
 
 		self.gcp_tools = gcp_tools
 		self.init_bdd()
+		self.keep = False
 
-	def execute(self, SQL, keep=False) :
+	def execute(self, SQL, keep=None) :
 		with self.engine.connect() as con:
 			k = con.execute(text(SQL))
+		
+		if keep == None : keep = self.keep
 		if not keep : self.engine.dispose()
 		return k
+
+	def close(self) :
+		self.engine.dispose()
 
 	def init_bdd(self) :
 
