@@ -38,7 +38,7 @@ class GCP_SQL() :
 
 		if self.gcp_tools.is_locally_run() :
 			self.gcp_tools.logger.debug("🚲 Démarrage de l'app SQL en local 🚲 -- Attention a bien avoir démarré le proxy !")
-			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}?charset=utf8mb4"
+			SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}?charset=utf8mb4"	
 
 		else :
 			self.gcp_tools.logger.debug("🛰 Démarrage de l'app SQL sur l'environnement Google 🛰")
@@ -50,7 +50,7 @@ class GCP_SQL() :
 	def to_one_dict(self, sql_execution, clean=False) :
 		if not sql_execution : return None
 		j = sql_execution._asdict()
-		return { k:j[k] for k in j if j[k] } if clean else j
+		return { k:j[k] for k in j if (j[k]==0 or j[k]) } if clean else j
 
 	def to_list_of_dict(self, sql_execution, clean=False) :
 
@@ -60,7 +60,7 @@ class GCP_SQL() :
 		if not clean : return t
 
 		t_ = []
-		for j in t : t_.append( { k:j[k] for k in j if j[k] } )
+		for j in t : t_.append( { k:j[k] for k in j if (j[k]==0 or j[k]) } )
 		return t_
 
 	def just_one_value(self, sql_execution) :
@@ -70,9 +70,9 @@ class GCP_SQL() :
 
 	def insert_or_update(self, table=None, **args) :
 
-		values_labels = [ f'{k}' for k in args if args[k] ]
+		values_labels = [ f'{k}' for k in args if (args[k]==0 or args[k]) ]
 		# DOCS : https://stackoverflow.com/a/41970663/2373259
-		values_values = [ args[k] for k in args if args[k] ]
+		values_values = [ args[k] for k in args if (args[k]==0 or args[k]) ]
 		values_values = [ "\"{}\"".format(k.replace('"',r'\"')) if ( not 'float' in str(type(k)) and not 'int' in str(type(k)) and not k.isnumeric() ) else "\"{}\"".format(k) for k in values_values ] #💩
 
 		values_labels = ', '.join( values_labels )
