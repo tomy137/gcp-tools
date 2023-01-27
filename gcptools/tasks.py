@@ -15,19 +15,30 @@ class GCP_TASKS() :
 	def __init__(self, gcp_tools):
 
 		self.gcp_tools = gcp_tools
+		self.client = tasks_v2.CloudTasksClient()
+
+		self.set_params()
 	
+	############################################################################
+	#	Mise à jour des paramètres
+	############################################################################
+	def set_params(self, params={}):
+		for p in ['PROJECT_NAME', 'LOCATION' ] :
+			setattr( self, p.lower(), params.get(p) or os.environ.get(p) )
+			if not getattr(self, p.lower(), None) : raise f"Pas de paramètre {p}"
+	
+		self.parent = f"projects/{self.project_name}/locations/{self.location}"
+
 	############################################################################
 	#	Ajoute une tâche à une liste
 	############################################################################
 	def send(self, queue_name, **params) :
 
-		client = tasks_v2.CloudTasksClient()
+		
 
-		project = os.environ['PROJECT_NAME']
-		location = os.environ['LOCATION']
-		queue = client.queue_path(project, location, queue_name)
+		queue = self.client.queue_path(self.project_name, self.location, queue_name)
 
-		self.gcp_tools.logger.debug(f"project={project}, location={location}, queue_name={queue_name}, queue={queue}")
+		self.gcp_tools.logger.debug(f"project={self.project_name}, location={self.location}, queue_name={queue_name}, queue={queue}")
 
 		http_method = params.get('http_method') or "GET"
 		http_method = tasks_v2.HttpMethod.POST if http_method=="POST" else tasks_v2.HttpMethod.GET
@@ -75,7 +86,7 @@ class GCP_TASKS() :
 			task['dispatch_deadline'] = duration_pb2.Duration().FromSeconds(60*int(params['timeout']))
 
 		if params.get('name') :
-			task_name = unidecode.unidecode( "projects/{}/locations/{}/queues/{}/tasks/{}".format(project,location,queue_name,params['name']) ).replace(' ','')
+			task_name = unidecode.unidecode( "projects/{}/locations/{}/queues/{}/tasks/{}".format(self.project,self.location,queue_name,params['name']) ).replace(' ','')
 			task["name"] = task_name
 
 		if params.get('time_delta') :
@@ -94,7 +105,7 @@ class GCP_TASKS() :
 
 			try :
 				self.gcp_tools.logger.debug(f"Created {log_prefix} - SHOOT ! (parent={queue}, task={task})")
-				response = client.create_task( parent=queue, task=task )
+				response = self.client.create_task( parent=queue, task=task )
 				task_id = response.name.split('/')[-1]
 				self.gcp_tools.logger.info(f"Created {log_prefix}, id={task_id}")
 				return True
@@ -157,4 +168,15 @@ class GCP_TASKS() :
 		if 'h' in my_delta :
 			hours = int(my_delta.split('h')[0])
 			return "{}{:02}{:02}{:02}".format(now.year,now.month,now.day,int(math.ceil(float(int(now.strftime('%H')) + 1) / hours)))
+
+
+	########################################################
+	# Récupère la liste des tâches d'une file d'attente
+	########################################################
+	def get_already_existing_tasks(self, queue_name) :
+
+		self.gcp_tools.logger.debug(f"🗺 get_already_existing_tasks({queue_name})")
+		waiting_queue_name = self.client.queue_path(self.project_name, self.location, queue_name)
+		return self.client.list_tasks(parent=waiting_queue_name)
+
 
