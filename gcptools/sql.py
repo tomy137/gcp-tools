@@ -13,8 +13,10 @@ class GCP_SQL() :
 		self.keep = False
 
 	def execute(self, SQL, keep=None) :
+		
 		with self.engine.connect() as con:
 			k = con.execute(text(SQL))
+			self.gcp_tools.logger.debug("📃 SQL : {SQL}")
 		
 		if keep == None : keep = self.keep
 		if not keep : self.engine.dispose()

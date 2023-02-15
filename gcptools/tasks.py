@@ -4,6 +4,7 @@ import unidecode
 import datetime
 import time 
 import math
+import traceback
 
 from google.cloud import tasks_v2
 from google.protobuf import duration_pb2
@@ -175,8 +176,16 @@ class GCP_TASKS() :
 	########################################################
 	def get_already_existing_tasks(self, queue_name) :
 
-		self.gcp_tools.logger.debug(f"🗺 get_already_existing_tasks({queue_name})")
-		waiting_queue_name = self.client.queue_path(self.project_name, self.location, queue_name)
-		return self.client.list_tasks(parent=waiting_queue_name)
+		try :
+			self.gcp_tools.logger.debug(f"🗺 get_already_existing_tasks({queue_name})")
+			waiting_queue_name = self.client.queue_path(self.project_name, self.location, queue_name)
+			#self.gcp_tools.logger.debug(f"🗺 get_already_existing_tasks({queue_name}) - Queue récupérée : {waiting_queue_name}")
+			tasks = self.client.list_tasks(parent=waiting_queue_name)
+			#self.gcp_tools.logger.debug(f"🗺 get_already_existing_tasks({queue_name}) - Tâches récupérées.")
+			return tasks
+		except Exception as e: 
+			self.gcp_tools.logger.error(f"🗺 get_already_existing_tasks({queue_name}) - {str(e)}")
+			self.gcp_tools.logger(traceback.format_exc())
+			raise e
 
 
