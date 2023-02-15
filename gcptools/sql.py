@@ -16,7 +16,7 @@ class GCP_SQL() :
 		
 		with self.engine.connect() as con:
 			k = con.execute(text(SQL))
-			self.gcp_tools.logger.debug("📃 SQL : {SQL}")
+			self.gcp_tools.logger.debug(f"📃 SQL : {SQL}")
 		
 		if keep == None : keep = self.keep
 		if not keep : self.engine.dispose()
