@@ -14,7 +14,7 @@ class GCP_SQL() :
 
 	def execute(self, SQL, keep=None) :
 		
-		with self.engine.connect() as con:
+		with self.engine.connect().execution_options(autocommit=True) as con:
 			k = con.execute(text(SQL))
 			self.gcp_tools.logger.debug(f"📃 SQL : {SQL}")
 		
