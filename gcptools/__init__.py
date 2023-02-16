@@ -2,6 +2,7 @@ import os
 
 from .logger import GCP_Logger
 from .sql import GCP_SQL
+from .sql2 import GCP_SQL2
 from .storage import GCP_Storage
 from .snippet import encode_b64_json, decode_b64_json, date_to_datetime, datetime_now
 from .compute import GCP_Compute
@@ -15,6 +16,7 @@ class GCP_Tools(object):
 		self.label = os.environ.get('DB_USER') or "DEFAULT"
 		self.logger = GCP_Logger(self)
 		self.sql = GCP_SQL(self)
+		self.sql2 = GCP_SQL2(self)
 		self.storage = GCP_Storage(self)
 		self.compute = GCP_Compute(self)
 		self.tasks = GCP_TASKS(self)

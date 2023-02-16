@@ -26,7 +26,8 @@ setup(
         'requests',
         'sqlalchemy',
         'tzlocal',
-        'unidecode'
+        'unidecode',
+        'mysql-connector-python'
       ]
 )
 
