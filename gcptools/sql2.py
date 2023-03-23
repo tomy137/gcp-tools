@@ -40,7 +40,7 @@ class GCP_SQL2() :
 		
 		self.mydb = mysql.connector.connect(**params)
 		
-		self.cursor = self.mydb.cursor()
+		self.cursor = self.mydb.cursor(buffered=True)
 		if self.mydb : self.gcp_tools.logger.debug("SQL2 - Connexion effectuée avec succès")
 
 	def to_one_dict(self, cursor) :
