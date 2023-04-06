@@ -35,8 +35,6 @@ class GCP_TASKS() :
 	############################################################################
 	def send(self, queue_name, **params) :
 
-		
-
 		queue = self.client.queue_path(self.project_name, self.location, queue_name)
 
 		self.gcp_tools.logger.debug(f"project={self.project_name}, location={self.location}, queue_name={queue_name}, queue={queue}")
@@ -51,11 +49,15 @@ class GCP_TASKS() :
 
 		headers = params.get('headers') or {}
 
-		if params.get('url') :
+		relative_uri = params.get('relative_uri')
+		simple_url = params.get('url')
+		if not relative_uri and not simple_url : raise Exception(f"Task has no relative_uri and no simple_url")
+
+		if simple_url :
 			
 			task = {	'http_request': {
 								'http_method': http_method,
-								'url': params['url'],
+								'url': simple_url,
 								'headers': headers
 							}
 						}
@@ -64,14 +66,17 @@ class GCP_TASKS() :
 				task['http_request']['body'] = payload
 				task['http_request']['headers'] = {'Content-type': 'application/json'}
 
-			url_prefix = params['url']
+			url_prefix = simple_url
 
 		else :
 
+			service = params.get('service')
+			if service : raise Exception(f"Task has relative_uri but no service")
+
 			task = {	'app_engine_http_request': {
 								'http_method': http_method,
-								'relative_uri': params['relative_uri'],
-								'app_engine_routing' : { "service" : params['service'] },
+								'relative_uri': relative_uri,
+								'app_engine_routing' : { "service" : service },
 								'headers': headers
 							}
 						}
@@ -80,7 +85,7 @@ class GCP_TASKS() :
 				task['app_engine_http_request']['body'] = payload
 				task['app_engine_http_request']['headers'] = {'Content-type': 'application/json'}
 
-			url_prefix = f"{params['service']} / {params['relative_uri']}"
+			url_prefix = f"{service} / {relative_uri}"
 
 		### DOC : https://googleapis.dev/python/cloudtasks/latest/tasks_v2beta3/types.html#google.cloud.tasks_v2beta3.types.Task.dispatch_deadline
 		if params.get('timeout') :
@@ -93,12 +98,27 @@ class GCP_TASKS() :
 		if params.get('time_delta') :
 			task["name"] = task.get('name') or ''
 			task["name"] += f"_{self.delta(params['time_delta'])}"
+		
+		log_prefix = f"Task [{http_method.name} - {queue_name}] {url_prefix}"
 			
 		if params.get('schedule_delta') :
 			task['schedule_time'] = self.apply_time_delta(params['schedule_delta'])
 
-		log_prefix = f"Task [{http_method.name} - {queue_name}] {url_prefix}"
+		if params.get('avoid_duplicate') :
 
+			self.already_existing_tasks = params.get('already_existing_tasks')
+
+			if not self.already_existing_tasks :
+				self.already_existing_tasks = self.get_already_existing_tasks(queue_name)
+
+			for t in self.already_existing_tasks :
+
+				if relative_uri and relative_uri == self.gcp_tools.rgetattr(t,'app_engine_http_request','relative_uri') :
+					self.gcp_tools.logger.warn(f'{log_prefix} Relative URL already in list')
+					return False
+				if simple_url and simple_url == self.gcp_tools.rgetattr(t,'http_request','url') :
+					self.gcp_tools.logger.warn(f'{log_prefix} URL already in list')
+					return False
 
 		retry = True
 

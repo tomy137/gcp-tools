@@ -41,3 +41,18 @@ def date_to_datetime(date,us=False):
 def datetime_now():
 	fr_timezone = pytz.timezone("Europe/Paris")
 	return datetime.datetime.now().replace(tzinfo=None,microsecond=0) if get_localzone().zone == "Europe/Paris" else datetime.datetime.utcnow().astimezone(fr_timezone).replace(tzinfo=None,microsecond=0)
+
+###########################################################
+#	getattr récursif
+#	Parcours un JSON pour trouver la bonne valeur ou NONE
+###########################################################
+def rgetattr(o, *params) :
+	return getattr__(o,list(params))
+
+def getattr__(obj,list) :
+	if len(list) > 0 :
+		key = list.pop(0)
+		val = obj.get(key) if isinstance(obj, dict) else getattr(obj, key, None)
+		return getattr__(val,list) if ( isinstance(val, dict) or getattr(val,'__getattr__',None) ) else val
+	else :
+		return obj

@@ -9,11 +9,11 @@ class GCP_SQL2() :
 		self.init_bdd()
 		self.cursor = None
 	
-	def execute(self, SQL, commit=False) :
+	def execute(self, SQL, commit=False, log=True) :
 
 		if not self.mydb or not self.cursor : self.init_bdd()
 		
-		self.gcp_tools.logger.debug(f"📃 SQL2 : {SQL}")
+		if log : self.gcp_tools.logger.debug(f"📃 SQL2 : {SQL}")
 		self.cursor.execute(SQL)
 		if commit : self.mydb.commit()
 		return self.cursor

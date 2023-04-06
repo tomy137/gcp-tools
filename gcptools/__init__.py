@@ -4,7 +4,7 @@ from .logger import GCP_Logger
 from .sql import GCP_SQL
 from .sql2 import GCP_SQL2
 from .storage import GCP_Storage
-from .snippet import encode_b64_json, decode_b64_json, date_to_datetime, datetime_now
+from .snippet import encode_b64_json, decode_b64_json, date_to_datetime, datetime_now, rgetattr
 from .compute import GCP_Compute
 from .tasks import GCP_TASKS
 from .chat import send
@@ -27,6 +27,7 @@ class GCP_Tools(object):
 		self.decode_b64_json = decode_b64_json
 		self.date_to_datetime = date_to_datetime
 		self.datetime_now = datetime_now
+		self.rgetattr = rgetattr
 
 		self.send_chat = send
 
