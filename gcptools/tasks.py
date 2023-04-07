@@ -205,7 +205,7 @@ class GCP_TASKS() :
 			return tasks
 		except Exception as e: 
 			self.gcp_tools.logger.error(f"🗺 get_already_existing_tasks({queue_name}) - {str(e)}")
-			self.gcp_tools.logger(traceback.format_exc())
+			self.gcp_tools.logger.error(traceback.format_exc())
 			raise e
 
 
