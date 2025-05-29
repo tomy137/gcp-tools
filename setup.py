@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gcptools',
-    version='0.0.2',
+    version='0.1.0',
     description='Outils pour la gestion de Google Cloud Platform',
     url='git@github.com:tomy137/gcptools.git',
     author='Thomas Auvray',
